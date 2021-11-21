@@ -2,8 +2,6 @@ const axios = require('axios');
 const emailService = require('./emailService');
 
 const spacer = '\n---------------------------------------';
-const to =
-  'fml1041@gmail.com, hilbertwilliam@gmail.com, tylerlangties@gmail.com';
 let counter = 1;
 let previous;
 
@@ -18,13 +16,11 @@ function getLatest() {
         .sort((a, b) => new Date(b.created) - new Date(a.created))
         .slice(0, 1)[0];
       console.log('🔍 Checking the latest... 🔍');
-      console.log(previous);
       if (previous && current.id !== previous.id) {
         console.log(text(current));
         emailService.sendEmail({
           subject: `New ASA on TinyChart 📈 - ${time}`,
           text: text(current),
-          to: 'fml1041@gmail.com',
         });
       } else {
         console.log(`😩😓 No luck! 😓😩 ${spacer}\n`);
@@ -46,5 +42,3 @@ function text(latest) {
 setInterval(() => {
   getLatest();
 }, 120000);
-
-getLatest();

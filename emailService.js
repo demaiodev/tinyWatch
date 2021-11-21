@@ -12,7 +12,7 @@ module.exports = {
     });
     const mailOptions = {
       from: 'tinymailer420@gmail.com',
-      to,
+      to: process.env.TO_LIST,
       subject,
       text,
     };

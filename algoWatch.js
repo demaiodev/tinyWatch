@@ -1,8 +1,8 @@
 const axios = require('axios');
 const emailService = require('./emailService');
-const to =
-  'fml1041@gmail.com, hilbertwilliam@gmail.com, tylerlangties@gmail.com';
+
 let stop = false;
+
 function getPrice() {
   console.log(`Emails halted: ${stop}`);
   if (!stop) {
@@ -15,12 +15,10 @@ function getPrice() {
         console.log(`Current YLDY price: ${yldyPrice}`);
         if (algoPrice < 1.75) {
           emailService.sendEmail(getEmailArgs(algoPrice, 'Algorand'));
-          console.log('Algorand alert!');
           stop = true;
         }
         if (yldyPrice < 0.016) {
           emailService.sendEmail(getEmailArgs(yldyPrice, 'Yieldly'));
-          console.log('Yieldly alert!');
           stop = true;
         }
       });
@@ -33,7 +31,6 @@ function getEmailArgs(price, asset) {
     text: `Current ${asset} price is $${price}. 🤯\n\nSwap USDC for ${asset} as soon as you can bro! 🤗\n
   https://app.tinyman.org/#/swap?asset_in=31566704&asset_out=0
   `,
-    to,
   };
 }
 
