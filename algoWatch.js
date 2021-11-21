@@ -1,49 +1,41 @@
-const url =
-  'https://mainnet.analytics.tinyman.org/api/v1/current-asset-prices/';
 const axios = require('axios');
-const nodemailer = require('nodemailer');
+const emailService = require('./emailService');
 const to =
-  'fml1041@gmail.com, hilbertwilliam@gmail.com, tylerlangties@gmail.com, danieljconnor@gmail.com, bkorosu@gmail.com';
+  'fml1041@gmail.com, hilbertwilliam@gmail.com, tylerlangties@gmail.com';
+let stop = false;
 function getPrice() {
-  axios.get(url).then(({ data }) => {
-    const algoPrice = data[0].price;
-    const yldyPrice = data['226701642'].price;
-    if (algoPrice < 1.77) {
-      sendEmail(algoPrice, 'Algorand');
-    }
-    if (yldyPrice < 0.017) {
-      sendEmail(yldyPrice, 'Yieldly');
-    }
-  });
+  console.log(`Emails halted: ${stop}`);
+  if (!stop) {
+    axios
+      .get('https://mainnet.analytics.tinyman.org/api/v1/current-asset-prices/')
+      .then(({ data }) => {
+        const algoPrice = data[0].price;
+        const yldyPrice = data['226701642'].price;
+        console.log(`Current ALGO price: ${algoPrice}`);
+        console.log(`Current YLDY price: ${yldyPrice}`);
+        if (algoPrice < 1.75) {
+          emailService.sendEmail(getEmailArgs(algoPrice, 'Algorand'));
+          console.log('Algorand alert!');
+          stop = true;
+        }
+        if (yldyPrice < 0.016) {
+          emailService.sendEmail(getEmailArgs(yldyPrice, 'Yieldly'));
+          console.log('Yieldly alert!');
+          stop = true;
+        }
+      });
+  }
 }
 
-function sendEmail(price, asset) {
-  const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-      user: 'tinymailer420@gmail.com',
-      pass: 'tinymailer!1',
-    },
-  });
-
-  const mailOptions = {
-    from: 'tinymailer420@gmail.com',
-    to: 'fml1041@gmail.com, hilbertwilliam@gmail.com',
+function getEmailArgs(price, asset) {
+  return {
     subject: `🤑 ${asset} Price Alert! 🤑`,
     text: `Current ${asset} price is $${price}. 🤯\n\nSwap USDC for ${asset} as soon as you can bro! 🤗\n
-    https://app.tinyman.org/#/swap?asset_in=31566704&asset_out=0
-    `,
+  https://app.tinyman.org/#/swap?asset_in=31566704&asset_out=0
+  `,
+    to,
   };
-  transporter.sendMail(mailOptions, function (error, info) {
-    if (error) {
-      console.log(error);
-    } else {
-      console.log('Email sent:' + info.response);
-    }
-  });
 }
-
-//work out somethin to not spam the emails
 
 setInterval(() => {
   getPrice();

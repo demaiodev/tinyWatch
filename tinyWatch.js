@@ -1,18 +1,11 @@
 const axios = require('axios');
-const nodemailer = require('nodemailer');
-require('dotenv').config();
+const emailService = require('./emailService');
 
 const spacer = '\n---------------------------------------';
 const to =
   'fml1041@gmail.com, hilbertwilliam@gmail.com, tylerlangties@gmail.com';
 let counter = 1;
-let previous = { id: 0 };
-
-function text(latest) {
-  return `💰 New ASA listed on TinyChart! 💰 \n
-📊 Go directly to Tinyman: https://app.tinyman.org/#/swap?asset_in=0&asset_out=${latest.id} \n
-📈 Click to see the TinyChart: https://tinychart.org/asset/${latest.id} \n`;
-}
+let previous;
 
 function getLatest() {
   const time = new Date().toLocaleString();
@@ -25,9 +18,14 @@ function getLatest() {
         .sort((a, b) => new Date(b.created) - new Date(a.created))
         .slice(0, 1)[0];
       console.log('🔍 Checking the latest... 🔍');
-      if (current.id !== previous.id) {
+      console.log(previous);
+      if (previous && current.id !== previous.id) {
         console.log(text(current));
-        sendEmail(current, time);
+        emailService.sendEmail({
+          subject: `New ASA on TinyChart 📈 - ${time}`,
+          text: text(current),
+          to: 'fml1041@gmail.com',
+        });
       } else {
         console.log(`😩😓 No luck! 😓😩 ${spacer}\n`);
       }
@@ -39,27 +37,14 @@ function getLatest() {
     });
 }
 
-function sendEmail(latest, time) {
-  const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-      user: process.env.USER,
-      pass: process.env.PASS,
-    },
-  });
-  const mailOptions = {
-    from: 'tinymailer420@gmail.com',
-    to,
-    subject: `New ASA on TinyChart 📈 - ${time}`,
-    text: text(latest),
-  };
-  transporter.sendMail(mailOptions, function (error, info) {
-    if (error) {
-      console.error(error);
-    }
-  });
+function text(latest) {
+  return `💰 New ASA listed on TinyChart! 💰 \n
+📊 Go directly to Tinyman: https://app.tinyman.org/#/swap?asset_in=0&asset_out=${latest.id} \n
+📈 Click to see the TinyChart: https://tinychart.org/asset/${latest.id} \n`;
 }
 
 setInterval(() => {
   getLatest();
-}, 60000);
+}, 120000);
+
+getLatest();
