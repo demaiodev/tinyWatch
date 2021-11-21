@@ -1,5 +1,6 @@
 const axios = require('axios');
 const emailService = require('./emailService');
+const utils = require('./utils');
 
 const assetIds = {
   yldy: 226701642,
@@ -15,8 +16,11 @@ function getPrice() {
       .then(({ data }) => {
         const algoPrice = data[assetIds.algo].price;
         const yldyPrice = data[assetIds.yldy].price;
+        console.log(
+          `Attempt #${utils.counter} - ${utils.time()} ${utils.spacer}`
+        );
         console.log(`Current ALGO price: ${algoPrice}`);
-        console.log(`Current YLDY price: ${yldyPrice}`);
+        console.log(`Current YLDY price: ${yldyPrice} ${utils.spacer}`);
         if (algoPrice < 1.75) {
           emailService.sendEmail(
             getEmailArgs(algoPrice, 'Algorand', {
@@ -26,7 +30,7 @@ function getPrice() {
           );
           stop = true;
         }
-        if (yldyPrice < 0.017) {
+        if (yldyPrice < 0.017 || yldyPrice > 0.0195) {
           emailService.sendEmail(
             getEmailArgs(yldyPrice, 'Yieldly', {
               assetIn: assetIds.algo,
@@ -35,6 +39,7 @@ function getPrice() {
           );
           stop = true;
         }
+        utils.counter++;
       });
   }
 }
