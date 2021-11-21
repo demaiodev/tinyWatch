@@ -1,6 +1,11 @@
 const axios = require('axios');
 const emailService = require('./emailService');
 
+const assetIds = {
+  yldy: 226701642,
+  algo: 0,
+  usdc: 31566704,
+};
 let stop = false;
 
 function getPrice() {
@@ -9,27 +14,37 @@ function getPrice() {
     axios
       .get('https://mainnet.analytics.tinyman.org/api/v1/current-asset-prices/')
       .then(({ data }) => {
-        const algoPrice = data[0].price;
-        const yldyPrice = data['226701642'].price;
+        const algoPrice = data[assetIds.algo].price;
+        const yldyPrice = data[assetIds.yldy].price;
         console.log(`Current ALGO price: ${algoPrice}`);
         console.log(`Current YLDY price: ${yldyPrice}`);
         if (algoPrice < 1.75) {
-          emailService.sendEmail(getEmailArgs(algoPrice, 'Algorand'));
+          emailService.sendEmail(
+            getEmailArgs(algoPrice, 'Algorand', {
+              assetIn: assetIds.usdc,
+              assetOut: assetIds.algo,
+            })
+          );
           stop = true;
         }
-        if (yldyPrice < 0.016) {
-          emailService.sendEmail(getEmailArgs(yldyPrice, 'Yieldly'));
+        if (yldyPrice < 0.017) {
+          emailService.sendEmail(
+            getEmailArgs(yldyPrice, 'Yieldly', {
+              assetIn: assetIds.algo,
+              assetOut: assetIds.yldy,
+            })
+          );
           stop = true;
         }
       });
   }
 }
 
-function getEmailArgs(price, asset) {
+function getEmailArgs(price, asset, { assetIn, assetOut }) {
   return {
     subject: `🤑 ${asset} Price Alert! 🤑`,
     text: `Current ${asset} price is $${price}. 🤯\n\nSwap USDC for ${asset} as soon as you can bro! 🤗\n
-  https://app.tinyman.org/#/swap?asset_in=31566704&asset_out=0
+    https://app.tinyman.org/#/swap?asset_in=${assetIn}&asset_out=${assetOut}
   `,
   };
 }
