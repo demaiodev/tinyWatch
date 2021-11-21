@@ -9,7 +9,6 @@ const assetIds = {
 let stop = false;
 
 function getPrice() {
-  console.log(`Emails halted: ${stop}`);
   if (!stop) {
     axios
       .get('https://mainnet.analytics.tinyman.org/api/v1/current-asset-prices/')
@@ -41,9 +40,12 @@ function getPrice() {
 }
 
 function getEmailArgs(price, asset, { assetIn, assetOut }) {
+  console.log(`🤑 ${asset} Price Alert! 🤑\nCurrent ${asset} price is $${price}. 🤯\n\nSwap as soon as you can bro! 🤗\n
+  https://app.tinyman.org/#/swap?asset_in=${assetIn}&asset_out=${assetOut}
+`);
   return {
     subject: `🤑 ${asset} Price Alert! 🤑`,
-    text: `Current ${asset} price is $${price}. 🤯\n\nSwap USDC for ${asset} as soon as you can bro! 🤗\n
+    text: `Current ${asset} price is $${price}. 🤯\n\nSwap as soon as you can bro! 🤗\n
     https://app.tinyman.org/#/swap?asset_in=${assetIn}&asset_out=${assetOut}
   `,
   };
