@@ -20,7 +20,7 @@ function getPrice() {
           `Attempt #${utils.counter} - ${utils.time()} ${utils.spacer}`
         );
         console.log(`Current ALGO price: ${algoPrice}`);
-        console.log(`Current YLDY price: ${yldyPrice} ${utils.spacer}`);
+        console.log(`Current YLDY price: ${yldyPrice} ${utils.spacer}\n`);
         if (algoPrice < 1.75) {
           emailService.sendEmail(
             getEmailArgs(algoPrice, 'Algorand', {

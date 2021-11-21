@@ -17,7 +17,7 @@ function getLatest() {
       if (previous && current.id !== previous.id) {
         console.log(text(current));
         emailService.sendEmail({
-          subject: `New ASA on TinyChart 📈 - ${time}`,
+          subject: `New ASA on TinyChart 📈 - ${utils.time()}`,
           text: text(current),
         });
       } else {
