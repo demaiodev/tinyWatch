@@ -2,7 +2,7 @@ const axios = require('axios');
 const emailService = require('./emailService');
 const utils = require('./utils');
 
-let previous;
+let previous = { id: 0, name: '' };
 
 function getLatest() {
   console.log(`Attempt #${utils.counter} - ${utils.time()} ${utils.spacer}`);
@@ -13,8 +13,11 @@ function getLatest() {
       const current = data
         .sort((a, b) => new Date(b.created) - new Date(a.created))
         .slice(0, 1)[0];
-      console.log('🔍 Checking the latest... 🔍');
-      if (previous && current.id !== previous.id) {
+      console.log('🔍 Checking the assets... 🔍');
+      console.log(
+        `Previous asset: ${previous.name}\nCurrent asset: ${current.name}`
+      );
+      if (previous.id && current.id !== previous.id) {
         console.log(text(current));
         emailService.sendEmail({
           subject: `New ASA on TinyChart 📈 - ${utils.time()}`,
@@ -39,6 +42,7 @@ function text(latest) {
 📈 Click to see the TinyChart: https://tinychart.org/asset/${latest.id} \n`;
 }
 
+getLatest();
 setInterval(() => {
   getLatest();
-}, 120000);
+}, 60000);
