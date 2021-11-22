@@ -56,6 +56,7 @@ function getEmailArgs(price, asset, { assetIn, assetOut }) {
   };
 }
 
+getPrice();
 setInterval(() => {
   getPrice();
-}, 120000);
+}, 30000);
